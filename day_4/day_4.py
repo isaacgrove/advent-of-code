@@ -11,7 +11,7 @@
 # pid (Passport ID)
 # cid (Country ID)
 
-# Out of a batch of passports, determine how many are valid.
+# Out of a batch of passports (obtained from file), determine how many are valid.
 # 'cid' is optional (since, in the fun word problem, our passport
 # doesn't have this field and we need to get around the requirement)
 
