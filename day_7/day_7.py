@@ -1,27 +1,25 @@
-# tl;dr
-#
 # Our input is a list of rules, one per line,
-# where a color of bag contains a certain number of other-colored
-# bags. Like Russian nesting dolls, down to the bottom where some
-# colors contain no other bags.
+# where certain bags, identified by color, contain certain numbers 
+# of other-colored bags, like Russian nesting dolls, 
+# down to the bottom where some colors contain no other bags.
+#
 # Given that we have a shiny gold bag, we have two tasks:
 # Part 1 is to determine how many bags can eventually contain
-# a shiny gold.
-# Part 2 is to determine how many bags must go inside our single
+# the shiny gold.
+# Part 2 is to determine how many bags must go inside our (single)
 # shiny gold.
 #
 # The input can be parsed into a graph structure and traversed as such.
 # I create two adjacency list representations - for Part 1, dictionary
-# keys are bag colors, and values are "bags in which this bag can exist".
-# For Part 2, keys are colors and values are themselves dictionaries - 
-# with keys being the bag colors that go inside and values the number of
-# such bags, based on the rules.
+# keys are bags, and values are "bags in which this bag can exist".
+# For Part 2, keys are bags and values are themselves dictionaries - 
+# keys being bags that go inside, values being the number of
+# such bags.
 #
 # Example rules: 
 # 1) vibrant lime bags contain 3 faded gold bags, 
 #    3 plaid aqua bags, 2 clear black bags.
 # 2) clear black bags contain no other bags.
-
 
 import re
 
@@ -34,14 +32,13 @@ def handle_input(file):
         lst[i] = lst[i].rstrip('\n')
     #lst = my_str.split('\n\n')
     return lst
+
 lst = (handle_input('input.txt'))
 print(f'There are {len(lst)} rules in the input (including for reference).')
 
-dct = {}
-num_color_regex = re.compile(r'[0-9]+\s\w+\s\w+')
-
-def parse_input_pt1(lst):
+def parse_input_pt1(lst, dct={}):
     '''creates a dict where the key can go directly inside all values'''
+    num_color_regex = re.compile(r'[0-9]+\s\w+\s\w+')
     for string in lst:
         # split string into bag in question, bags it can contain
         subs = string.split(' bags contain ')
@@ -51,11 +48,10 @@ def parse_input_pt1(lst):
             if entry[2:] not in dct:
                 dct[entry[2:]] = {subs[0]}
             else:
-                dct[entry[2:]].add(subs[0])
-                
+                dct[entry[2:]].add(subs[0])          
     return dct
+
 dct = parse_input_pt1(lst)
-visited = {key: False for key in dct.keys()}
 
 # let's DFS search the dct starting at shiny gold
 # not worried about complexity; visits the visited
@@ -64,7 +60,6 @@ stack = ['shiny gold']
 while stack:
     node = stack.pop()
     res.add(node)
-    visited[node] = True
     for neighbor in dct[node]:
         if neighbor not in dct:
             res.add(neighbor)
@@ -73,13 +68,12 @@ while stack:
 res.remove('shiny gold')
 print(f'Part 1: there are {len(res)} bags that can contain shiny gold bags.')
 
-dct = {}
-num_color_regex = re.compile(r'[0-9]+\s\w+\s\w+')
 
 # Part 2
 
-# builds dct with contains-contained relationships
-def build_dct_contains(lst):
+# re-builds dct with contains: contained relationships
+def build_dct_contains(lst, dct={}):
+    num_color_regex = re.compile(r'[0-9]+\s\w+\s\w+')
     for string in lst:
         # split string into bag in question, bags it can contain
         subs = string.split(' bags contain ')
@@ -91,7 +85,6 @@ def build_dct_contains(lst):
             lil_dct[entry[2:]] = int(entry[0])
         dct[subs[0]] = lil_dct
     return dct
-
 
 dct = build_dct_contains(lst)
 
@@ -105,8 +98,7 @@ def recurse(root, total, prod=1, num=1):
     for neighbor, value in dct[root].items():
         recurse(neighbor, total, prod*value, value)
     total.append(prod)
-        
-    
+            
 def bag_counter(root):
     tot = []
     recurse('shiny gold', tot, prod=1, num=1)
