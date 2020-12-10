@@ -1,3 +1,35 @@
+# We are given input instructions like so:
+#
+# nop +0
+# acc +1
+# jmp +4
+# acc +3
+# jmp -3
+# acc -99
+# acc +1
+# jmp -4
+# acc +6
+#
+# and so on. My instructions are 638 long.
+# 'nop' means do nothing and move to the next instruction.
+# 'acc' means add the integer to an accumulator variable.
+# 'jmp' means move to another instruction, integer spaces away (up or down).
+# 
+# The instructions inherently have an infinite loop.
+#
+# We have two tasks:
+#
+# 1) Find what the accumulator is immediately before repeating
+# any instruction
+#
+# 2) Within the instructions, there is one 'jmp' or 'nop' instruction
+# which can be replaced with the other to allow termination of the full
+# list of instructions (which occurs when the program tries to execute an
+# instruction immediately after the final one in the list).
+# Fix the incorrect instruction and return the accumulator at the end
+# of the program
+
+
 def handle_input(file):
     '''Accepts source text from problem input webpage 
     (saved as .txt file), returns list of boot code instructions'''
